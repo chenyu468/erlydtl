@@ -912,39 +912,42 @@ cut([H|T], H, Acc) ->
 cut([H|T], Char, Acc) ->
     cut(T, Char, [H|Acc]).
 
-escape(Binary, Index) when is_binary(Binary) ->
-    case Binary of
-        <<Pre:Index/binary, $<, Post/binary>> ->
-            process_binary_match(Pre, <<"&lt;">>, size(Post), escape(Post, 0));
-        <<Pre:Index/binary, $>, Post/binary>> ->
-            process_binary_match(Pre, <<"&gt;">>, size(Post), escape(Post, 0));
-        <<Pre:Index/binary, $&, Post/binary>> ->
-            process_binary_match(Pre, <<"&amp;">>, size(Post), escape(Post, 0));
-        <<Pre:Index/binary, 34, Post/binary>> ->
-            process_binary_match(Pre, <<"&quot;">>, size(Post), escape(Post, 0));
-        <<Pre:Index/binary, 39, Post/binary>> ->
-            process_binary_match(Pre, <<"&#039;">>, size(Post), escape(Post, 0));
-        <<_:Index/binary, _, _/binary>> ->
-            escape(Binary, Index + 1);
-        Binary ->
-            Binary
-    end;
-escape([], Acc) ->
-    lists:reverse(Acc);
-escape("<" ++ Rest, Acc) ->
-    escape(Rest, lists:reverse("&lt;", Acc));
-escape(">" ++ Rest, Acc) ->
-    escape(Rest, lists:reverse("&gt;", Acc));
-escape("&" ++ Rest, Acc) ->
-    escape(Rest, lists:reverse("&amp;", Acc));
-escape("\"" ++ Rest, Acc) ->
-    escape(Rest, lists:reverse("&quot;", Acc));
-escape("'" ++ Rest, Acc) ->
-    escape(Rest, lists:reverse("&#039;", Acc));
-escape([S | Rest], Acc) when is_list(S); is_binary(S)->
-    escape(Rest, [force_escape(S) | Acc]);
-escape([C | Rest], Acc) ->
-    escape(Rest, [C | Acc]).
+escape(Binary, _) -> %% when is_binary(Binary)->
+    Binary.
+
+%% escape(Binary, Index) when is_binary(Binary) ->
+%%     case Binary of
+%%         <<Pre:Index/binary, $<, Post/binary>> ->
+%%             process_binary_match(Pre, <<"&lt;">>, size(Post), escape(Post, 0));
+%%         <<Pre:Index/binary, $>, Post/binary>> ->
+%%             process_binary_match(Pre, <<"&gt;">>, size(Post), escape(Post, 0));
+%%         <<Pre:Index/binary, $&, Post/binary>> ->
+%%             process_binary_match(Pre, <<"&amp;">>, size(Post), escape(Post, 0));
+%%         <<Pre:Index/binary, 34, Post/binary>> ->
+%%             process_binary_match(Pre, <<"&quot;">>, size(Post), escape(Post, 0));
+%%         <<Pre:Index/binary, 39, Post/binary>> ->
+%%             process_binary_match(Pre, <<"&#039;">>, size(Post), escape(Post, 0));
+%%         <<_:Index/binary, _, _/binary>> ->
+%%             escape(Binary, Index + 1);
+%%         Binary ->
+%%             Binary
+%%     end;
+%% escape([], Acc) ->
+%%     lists:reverse(Acc);
+%% escape("<" ++ Rest, Acc) ->
+%%     escape(Rest, lists:reverse("&lt;", Acc));
+%% escape(">" ++ Rest, Acc) ->
+%%     escape(Rest, lists:reverse("&gt;", Acc));
+%% escape("&" ++ Rest, Acc) ->
+%%     escape(Rest, lists:reverse("&amp;", Acc));
+%% escape("\"" ++ Rest, Acc) ->
+%%     escape(Rest, lists:reverse("&quot;", Acc));
+%% escape("'" ++ Rest, Acc) ->
+%%     escape(Rest, lists:reverse("&#039;", Acc));
+%% escape([S | Rest], Acc) when is_list(S); is_binary(S)->
+%%     escape(Rest, [force_escape(S) | Acc]);
+%% escape([C | Rest], Acc) ->
+%%     escape(Rest, [C | Acc]).
 
 
 escapejs([], Acc) ->
